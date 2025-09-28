@@ -8,4 +8,8 @@ import AntVGraph from './components/AntVGraph.vue'
   </div>
 </template>
 
-<style scoped></style>
+<style scoped>
+.main-layout {
+  height: 100vh;
+}
+</style>
