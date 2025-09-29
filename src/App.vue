@@ -1,10 +1,10 @@
 <script setup lang="ts">
-import AntVGraph from './components/AntVGraph.vue'
+import TreeGraph from './components/tree/index.vue'
 </script>
 
 <template>
   <div class="main-layout">
-    <AntVGraph />
+    <TreeGraph />
   </div>
 </template>
 
