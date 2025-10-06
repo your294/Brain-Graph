@@ -1,11 +1,10 @@
 <script setup lang="ts">
-import TreeGraph from './components/tree/index.vue'
-import kLineGraph from './components/line/index.vue'
+import donutChart from './components/donut/index.vue'
 </script>
 
 <template>
   <div class="main-layout">
-    <k-line-graph />
+    <donut-chart />
   </div>
 </template>
 
