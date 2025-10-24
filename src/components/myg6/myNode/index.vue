@@ -29,6 +29,8 @@ const state = reactive({
   treeData: {
     id: 'root',
     sname: 'root',
+    officePos: 'HomeBuilding',
+    userPosition: 'CEO',
     name: uniqueId(),
     children: [],
   } as any,
@@ -37,9 +39,11 @@ const state = reactive({
   inputStyle: {
     top: '0px',
     left: '0px',
+    height: '20px',
   },
   editOne: null as any,
   editType: '',
+  editField: 'sname',
   graph: null as any,
 })
 
@@ -53,7 +57,7 @@ const handleBlurInput = () => {
     return
   }
   state.graph.updateItem(item, {
-    sname: input,
+    [state.editField || 'sname']: input || ' ',
   })
   // 添加时需要更新父节点信息
   if (editType === 'add') {
@@ -84,6 +88,8 @@ const addEvent = (graph: any) => {
       model.children.push({
         id,
         name: 1,
+        officePos: 'null',
+        userPosition: 'null',
         sname: '',
         parentId: model.id,
       })
@@ -93,6 +99,7 @@ const addEvent = (graph: any) => {
       const canvasXY = graph.getCanvasByPoint(curTarget.x, curTarget.y)
       state.editOne = curTarget
       state.input = curTarget.sname
+      state.editField = 'sname'
       setTimeout(() => {
         state.showInput = true
         nextTick(() => {
@@ -102,6 +109,7 @@ const addEvent = (graph: any) => {
       state.inputStyle = {
         left: `${canvasXY.x}px`,
         top: `${canvasXY.y}px`,
+        height: '30px',
       }
     }
     //删除节点
@@ -109,19 +117,62 @@ const addEvent = (graph: any) => {
       graph.removeChild(model.id)
       graph.updateItem(model.parentId, {})
     }
-    if (name === 'chart-rect') {
-      const curTarget = graph.findDataById(item._cfg.id)
-      const canvasXY = graph.getCanvasByPoint(curTarget.x, curTarget.y)
+    // 编辑节点
+    const clickPos = [
+      'chart-rect',
+      'officePos',
+      'officePos-wrap',
+      'userPosition',
+      'userPosition-wrap',
+      'label',
+    ]
+    if (clickPos.includes(name)) {
+      let keyShapeTarget = graph.findDataById(item._cfg.id)
+      // 获取真实的点击内容
+      let curTarget = keyShapeTarget
+      if (name !== 'chart-rect') {
+        curTarget = target.attrs
+      }
+      // 获取关键图片坐标
+      const keyShapeCanvasXY = graph.getCanvasByPoint(
+        keyShapeTarget.x,
+        keyShapeTarget.y,
+      )
+      let canvasX = keyShapeCanvasXY.x,
+        canvasY = keyShapeCanvasXY.y
+      // 如果是内部图形需要计算相对坐标
+      if (curTarget !== keyShapeTarget) {
+        const curCanvasXY = graph.getCanvasByPoint(curTarget.x, curTarget.y)
+        canvasX = keyShapeCanvasXY.x + curCanvasXY.x
+        canvasY = keyShapeCanvasXY.y + curCanvasXY.y - 14
+      }
       state.editOne = event.item
-      state.input = curTarget.sname
+
+      if (name.includes('officePos') || name.includes('userPosition')) {
+        const key = name.includes('officePos') ? 'officePos' : 'userPosition'
+        state.input = keyShapeTarget[key] || ''
+        state.editField = key
+      } else {
+        state.input = keyShapeTarget.sname
+        state.editField = 'sname'
+      }
       state.showInput = true
       state.editType = 'edit'
       nextTick(() => {
         inputRef.value.focus()
       })
+      // 针对头部label元素的偏移量
+      const offset =
+        name === 'label'
+          ? item._cfg.model.size[0] / 2
+          : name === 'chart-rect'
+            ? 0
+            : 10
+      const height = ['chart-rect', 'label'].includes(name) ? 30 : 20
       state.inputStyle = {
-        left: `${canvasXY.x}px`,
-        top: `${canvasXY.y}px`,
+        left: `${canvasX - offset}px`,
+        top: `${canvasY}px`,
+        height: `${height}px`,
       }
       graph.setItemState(item, 'selected', true)
     }
@@ -140,6 +191,8 @@ const clearGraph = () => {
   state.treeData = {
     id: 'root',
     sname: 'root',
+    officePos: 'HomeBuilding',
+    userPosition: 'CEO',
     name: '1',
     children: [],
   }
@@ -189,7 +242,5 @@ onMounted(() => {
   line-height: 15px;
   height: 18px;
   width: 100px;
-  background-color: #d2f397;
-  color: #333;
 }
 </style>

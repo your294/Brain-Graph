@@ -1,4 +1,4 @@
-import type { Graph } from '@antv/g6'
+import { Util, type Graph } from '@antv/g6'
 
 //展开收起子节点
 export function collapseNode(graph: Graph) {
@@ -50,4 +50,33 @@ export function mouseLeaveNode(graph: Graph) {
     }
     graph.setItemState(item, 'active', false)
   })
+}
+
+//
+export function fittingString(
+  content: string,
+  maxWidth: number,
+  fontSize: number,
+) {
+  if (!content) return ''
+  const ellipsis = '...'
+  const ellipsisLength = Util.getTextSize(ellipsis, fontSize)[0]
+  // 区分中文字符
+  const pattern = new RegExp('[\u4E00-\u9FA5]+')
+  let currentWidth = 0
+  let res = ''
+  content.split('').forEach((letter, i) => {
+    if (currentWidth + ellipsisLength > maxWidth) return
+    if (pattern.test(letter)) {
+      currentWidth += fontSize
+    } else {
+      currentWidth += Util.getTextSize(letter, fontSize)[0]
+    }
+    if (currentWidth + ellipsisLength < maxWidth) {
+      res = `${content.slice(0, i + 1)}`
+    } else {
+      res = `${content.slice(0, i + 1)}...`
+    }
+  })
+  return res
 }

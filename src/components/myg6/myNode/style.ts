@@ -28,8 +28,6 @@ export const defaultLayout = {
 
 // 节点样式
 export const defaultNodeStyle = {
-  fill: '#B5C6E7',
-  stroke: '#0B1220',
   radius: 5,
   active: {
     stroke: '#E8EDDB',
@@ -66,4 +64,32 @@ export const comboStateStyles = {
     stroke: '#2196f3',
     lineWidth: 1,
   },
+}
+
+export const blueColorPallete = {
+  blue5: '#E8F3FF',
+  blue4: '#BEDAFF',
+  blue3: '#9ABFFF',
+  blue2: '#6AA1FF',
+  blue1: '#165Dff',
+}
+
+export const midColorPallete = {
+  black: '#1D2129',
+  StrongGray: '#4E3969',
+  gray: '#B6909C',
+  base: '#C9CDD4',
+}
+
+export const funcColorPallete = {
+  success5: '#EBFFEA',
+  success4: '#7BE188',
+  success3: '#23C343',
+  success2: '#DEF5B3',
+  success1: '#F2FFEB',
+  warning1: '#FF7D00',
+  warning2: '#FF9A2E',
+  warning3: '#FFB65D',
+  error1: '#F53F3F',
+  white1: '#F3F3F3',
 }

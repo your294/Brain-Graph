@@ -1,18 +1,19 @@
+import { Graph, Marker, registerEdge, registerNode, TreeGraph } from '@antv/g6'
 import {
-  Arrow,
-  Graph,
-  Marker,
-  registerEdge,
-  registerNode,
-  TreeGraph,
-} from '@antv/g6'
-import { collapseNode, mouseenterNode, mouseLeaveNode } from './event'
+  collapseNode,
+  mouseenterNode,
+  mouseLeaveNode,
+  fittingString,
+} from './event'
 import {
   comboStateStyles,
   defaultEdgeStyle,
   defaultLabelCfg,
   defaultLayout,
   defaultNodeStyle,
+  blueColorPallete,
+  midColorPallete,
+  funcColorPallete,
 } from './style'
 
 export function renderMap(data: any[], graph: Graph) {
@@ -21,13 +22,13 @@ export function renderMap(data: any[], graph: Graph) {
     'chart-node',
     {
       options: {
-        size: [100, 60],
-        stroke: '#0B1220',
-        fill: '#B5C6E7',
+        size: [100, 100],
+        stroke: midColorPallete.base,
+        fill: blueColorPallete.blue5,
         stateStyles: {
           active: {
-            stroke: '#E8EDDB',
-            fill: '#D2F397',
+            stroke: funcColorPallete.warning3,
+            fill: funcColorPallete.success1,
           },
         },
       },
@@ -48,16 +49,86 @@ export function renderMap(data: any[], graph: Graph) {
             y: 0,
             width,
             height,
-            fill: cfg.style?.fill || '#B5C6E7',
+            stroke: midColorPallete.base,
+            lineWidth: 1,
+            fill: cfg.style?.fill || blueColorPallete.blue5,
           },
           name: 'chart-rect',
           draggble: true,
+        })
+        // 添加具体的{officePos}信息字段
+        group.addShape('rect', {
+          attrs: {
+            x: 0,
+            y: 31,
+            width: width,
+            height: 19,
+            fill: 'transparent',
+            cursor: 'pointer',
+          },
+          name: 'officePos-wrap',
+        })
+        group.addShape('text', {
+          attrs: {
+            x: 10,
+            y: 50,
+            cursor: 'pointer',
+            textAlign: 'left',
+            fill: funcColorPallete.error1,
+            fontSize: 14,
+            text: fittingString(cfg.officePos, 80, 14),
+          },
+          name: 'officePos',
+        })
+        group.addShape('path', {
+          attrs: {
+            path: [
+              ['M', 0, 51],
+              ['L', width, 51],
+            ],
+            stroke: midColorPallete.base,
+            lineWidth: 1,
+          },
+        })
+        // 添加具体的办公地点{userPostion}字段
+        group.addShape('rect', {
+          attrs: {
+            x: 0,
+            y: 50,
+            width: width,
+            height: 25,
+            fill: 'transparent',
+            cursor: 'pointer',
+          },
+          name: 'userPosition-wrap',
+        })
+        group.addShape('text', {
+          attrs: {
+            x: 10,
+            y: 75,
+            cursor: 'pointer',
+            textAlign: 'left',
+            fill: funcColorPallete.warning1,
+            fontSize: 14,
+            text: fittingString(cfg.userPosition, 80, 14),
+          },
+          name: 'userPosition',
+        })
+        group.addShape('path', {
+          attrs: {
+            path: [
+              ['M', 0, 76],
+              ['L', width, 76],
+            ],
+            stroke: midColorPallete.base,
+            lineWidth: 1,
+          },
         })
         // 添加按钮及icon
         group.addShape('text', {
           attrs: {
             cursor: 'pointer',
-            x: 112,
+            x: width + 12,
             y: 10,
             stroke: '#707070',
             fill: '#B5C',
@@ -65,7 +136,7 @@ export function renderMap(data: any[], graph: Graph) {
             textBaseline: 'middle',
             fontFamily: 'iconfont',
             text: '\ue658',
-            fontSize: 12,
+            fontSize: 20,
           },
           name: 'add-icon',
           draggble: true,
@@ -73,14 +144,14 @@ export function renderMap(data: any[], graph: Graph) {
         if (cfg.id !== 'root') {
           group.addShape('text', {
             attrs: {
-              x: 112,
-              y: 20,
+              x: width + 12,
+              y: height - 20,
               cursor: 'pointer',
               fontFamily: 'iconfont',
               textAlign: 'center',
               textBaseline: 'middle',
               text: '\ue74b',
-              fontSize: 12,
+              fontSize: 16,
               stroke: '#707070',
               fill: '#B5C',
               opacity: 0,
@@ -88,52 +159,52 @@ export function renderMap(data: any[], graph: Graph) {
             name: 'delete-icon',
           })
         }
-        if (cfg.sname) {
-          if (typeof cfg.sname === 'string') {
-            group.addShape('text', {
-              attrs: {
-                ...labelCfg.style,
-                text: cfg.sname,
-                textAlign: 'left',
-                x: 10,
-                y: 15,
-              },
-              name: 'label',
-            })
-          } else if (Array.isArray(cfg.sname)) {
-            cfg.sname.forEach((name: string, i: number) => {
-              let x = 0,
-                y = 0
-              switch (i) {
-                case 0:
-                  ;((x = 10), (y = 15))
-                  break
-                case 1:
-                  ;((x = 10), (y = 35))
-                case 2:
-                  ;((x = 10), (y = 45))
-                default:
-                  break
-              }
-              group.addShape('text', {
-                attrs: {
-                  ...labelCfg.style,
-                  text: name,
-                  textAlign: 'left',
-                  x,
-                  y,
-                },
-                name: `label${i}`,
-              })
-            })
-          }
-        }
+        // 添加sname外围样式展示组件
+        group.addShape('rect', {
+          attrs: {
+            ...styles,
+            radius: [styles.radius, styles.radius, 0, 0],
+            cursor: 'default',
+            x: 1.5,
+            y: 1,
+            height: 30,
+            width: width - 3,
+            fill: blueColorPallete.blue1,
+          },
+          name: 'label-wrap',
+        })
+        group.addShape('path', {
+          attrs: {
+            path: [
+              ['M', 0, 31],
+              ['L', width, 31],
+            ],
+            stroke: midColorPallete.base,
+            lineWidth: 2,
+          },
+        })
+        // 添加核心内容{sname}展示组件
+        group.addShape('text', {
+          attrs: {
+            ...labelCfg.style,
+            cursor: 'pointer',
+            text: fittingString(cfg.sname, 80, 16),
+            textAlign: 'center',
+            textBaseline: 'middle',
+            fontSize: 16,
+            fontWeight: 400,
+            fill: funcColorPallete.white1,
+            x: width / 2,
+            y: 15,
+          },
+          name: 'label',
+        })
         if (cfg.children && cfg.children.length > 0) {
           group.addShape('circle', {
             attrs: {
-              x: 102,
-              y: 20,
-              r: 6,
+              x: width - 1,
+              y: height - 1,
+              r: 10,
               cursor: 'pointer',
               lineWidth: 1,
               fill: !cfg.collapsed ? '#9e9e9e' : '#2196f3',
@@ -161,12 +232,12 @@ export function renderMap(data: any[], graph: Graph) {
           if (chartRect) {
             if (value) {
               chartRect.attr({
-                stroke: '#2196f3',
+                stroke: blueColorPallete.blue3,
                 lineWidth: 2,
               })
             } else {
               chartRect?.attr({
-                stroke: '#0B1220',
+                stroke: midColorPallete.base,
                 lineWidth: 1,
               })
             }
@@ -196,13 +267,13 @@ export function renderMap(data: any[], graph: Graph) {
           if (chartRect) {
             if (value) {
               chartRect.attr({
-                stroke: '#E8EDDB',
-                fill: '#D2F397',
+                stroke: funcColorPallete.warning3,
+                fill: funcColorPallete.success1,
               })
             } else {
               chartRect.attr({
-                stroke: '#0B1220',
-                fill: '#B5C6E7',
+                stroke: midColorPallete.base,
+                fill: blueColorPallete.blue5,
               })
             }
           }
@@ -257,7 +328,7 @@ export function initGraph(graphWrapId: string): Graph {
     },
     defaultNode: {
       type: 'chart-node',
-      size: [100, 60],
+      size: [100, 100],
       style: defaultNodeStyle,
       labelCfg: defaultLabelCfg,
     },
