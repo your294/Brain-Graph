@@ -1,15 +1,22 @@
 <script setup lang="ts">
-import myNodeGraph from '@/components/myg6/myNode/index.vue'
+import dropDownList from './components/dropDownList/index.vue'
 </script>
 
 <template>
   <div class="main-layout">
-    <my-node-graph />
+    <drop-down-list class="base-list" />
   </div>
 </template>
 
 <style scoped>
 .main-layout {
   height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.base-list {
+  width: 100px;
 }
 </style>
