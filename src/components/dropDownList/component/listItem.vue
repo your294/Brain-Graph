@@ -3,7 +3,7 @@
     class="list-item-wrapper"
     :class="{ 'is-hovered': isHovered }"
     role="option"
-    @click="handleSelected"
+    @mousedown="handleSelected"
     @keyup.enter="handleSelected"
     @mouseenter="handleMouseEnter"
   >

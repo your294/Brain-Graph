@@ -3,8 +3,8 @@
     class="list-container"
     v-if="show"
     :style="{
-      top: listStyle.x,
-      left: listStyle.y,
+      top: listStyle.y + 'px',
+      left: listStyle.x + 'px',
     }"
     tabindex="-1"
     ref="listContainerRef"
@@ -22,7 +22,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch } from 'vue'
+import { ref } from 'vue'
 import listItem from './listItem.vue'
 
 interface ListStyle {
@@ -52,7 +52,7 @@ const emit = defineEmits(['selected', 'mouseenter'])
 const listContainerRef = ref<HTMLElement | null>(null)
 
 function handleSeleceted(val: any) {
-  emit('selected', val, false)
+  emit('selected', val)
 }
 
 function handleMouseEnter(index: number) {
