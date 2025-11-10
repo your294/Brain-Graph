@@ -45,7 +45,6 @@ function handleMouseEnter() {
     color: #333;
   }
 
-  &:hover,
   &.is-hovered {
     background-color: cornflowerblue;
     color: white;

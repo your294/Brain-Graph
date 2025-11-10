@@ -99,7 +99,7 @@ async function handleChange(event: any) {
 }
 
 // 当前悬停的索引
-const hoveredIndex = ref(-1)
+const hoveredIndex = ref(0)
 const dropDownListRef = ref<any>(null)
 
 // 处理键盘上下按键
@@ -157,7 +157,7 @@ function handleSelected(val: any) {
   // 删除输入$
   range.deleteContents()
   range.insertNode(document.createTextNode(`${val}`))
-  // 移动到末尾
+  // 移动到替换完成内容的末尾
   range.collapse()
   dollarPosition.value = -1
   nextTick(() => {
